@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }) => {
 
 /**
  * Custom hook to access authentication context
- * @returns { authToken: string, userRole: string, login: (token: string, role: string) => void, logout: () => void }
+ * @returns {object} Context value (authToken, userRole, login, logout)
  */
 export const useAuth = () => {
     const context = useContext(AuthContext);

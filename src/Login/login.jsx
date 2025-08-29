@@ -130,6 +130,7 @@ const LoginForm = () => {
     password: '',
     rememberMe: false
   });
+  const [error, setError] = useState(null);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -142,11 +143,12 @@ const LoginForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!selectedRole) {
-      alert('Por favor, selecione o tipo de usuário');
+      setError('Por favor, selecione o tipo de usuário');
       return;
     }
 
     setIsLoading(true);
+    setError(null);
 
     try {
       const { token, role } = await AuthService.login({
@@ -157,6 +159,7 @@ const LoginForm = () => {
       login(token, role);
     } catch (error) {
       console.error('Login failed:', error);
+      setError('Falha no login. Verifique suas credenciais e tente novamente.');
     } finally {
       setIsLoading(false);
     }
@@ -235,6 +238,10 @@ const LoginForm = () => {
         <button type="button" className="forgot-password-link">
           Esqueceu a senha?
         </button>
+      </div>
+
+      <div className="error-message">
+        {error && <p>{error}</p>}
       </div>
 
       {/* Botão de Login */}
