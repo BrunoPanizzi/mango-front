@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Users, Plus, XCircle, Trash2, Printer } from "lucide-react";
 import "./criarTurma.css";
+import TurmaService from "../../Services/TurmaService";
 
 const CriarTurma = () => {
   const [nomeTurma, setNomeTurma] = useState("");
@@ -14,28 +15,48 @@ const CriarTurma = () => {
   });
 
   const [turmas, setTurmas] = useState([
-    {
-      id: 1,
-      nome: "1º ANO A",
-      turno: "Manhã",
-      quantidadeMaxima: 25,
-      alunosMatriculados: 23,
-    },
-    {
-      id: 2,
-      nome: "2º ANO B",
-      turno: "Tarde",
-      quantidadeMaxima: 30,
-      alunosMatriculados: 28,
-    },
-    {
-      id: 3,
-      nome: "3º ANO C",
-      turno: "Manhã",
-      quantidadeMaxima: 25,
-      alunosMatriculados: 25,
-    },
+    // {
+    // id: 1,
+    // nome: "1º ANO A",
+    // turno: "Manhã",
+    // quantidadeMaxima: 25,
+    // alunosMatriculados: 23,
+    // },
+    // {
+    // id: 2,
+    // nome: "2º ANO B",
+    // turno: "Tarde",
+    // quantidadeMaxima: 30,
+    // alunosMatriculados: 28,
+    // },
+    // {
+    // id: 3,
+    // nome: "3º ANO C",
+    // turno: "Manhã",
+    // quantidadeMaxima: 25,
+    // alunosMatriculados: 25,
+    // },
   ]);
+  const [turmasLoading, setTurmasLoading] = useState(false);
+  const [turmasError, setTurmasError] = useState(false);
+
+  useEffect(() => {
+    const fetchTurmas = async () => {
+      setTurmasLoading(true);
+      setTurmasError(false);
+      try {
+        const turmas = await TurmaService.list();
+        setTurmas(turmas);
+      } catch (error) {
+        setTurmasError(true);
+        console.error("Erro ao buscar turmas:", error);
+      } finally {
+        setTurmasLoading(false);
+      }
+    }
+
+    fetchTurmas();
+  }, [])
 
   const handleAddTurma = (event) => {
     event.preventDefault();
@@ -145,9 +166,8 @@ const CriarTurma = () => {
                 <input
                   type="text"
                   id="nomeTurma"
-                  className={`cadastro-turma-input ${
-                    erros.nomeTurma ? "input-error" : ""
-                  }`}
+                  className={`cadastro-turma-input ${erros.nomeTurma ? "input-error" : ""
+                    }`}
                   value={nomeTurma}
                   onChange={(e) => setNomeTurma(e.target.value)}
                 />
@@ -159,9 +179,8 @@ const CriarTurma = () => {
               <div className="cadastro-turma-input-wrapper">
                 <select
                   id="turno"
-                  className={`cadastro-turma-select ${
-                    erros.turno ? "input-error" : ""
-                  }`}
+                  className={`cadastro-turma-select ${erros.turno ? "input-error" : ""
+                    }`}
                   value={turno}
                   onChange={(e) => setTurno(e.target.value)}
                 >
@@ -178,9 +197,8 @@ const CriarTurma = () => {
                 <input
                   type="number"
                   id="quantidadeMaxima"
-                  className={`cadastro-turma-input ${
-                    erros.quantidadeMaxima ? "input-error" : ""
-                  }`}
+                  className={`cadastro-turma-input ${erros.quantidadeMaxima ? "input-error" : ""
+                    }`}
                   value={quantidadeMaxima}
                   onChange={(e) => setQuantidadeMaxima(e.target.value)}
                   min="1"
@@ -237,45 +255,45 @@ const CriarTurma = () => {
               ).toFixed(0);
 
               return (
-<div key={turma.id} className="cadastro-turma-card">
-  <div className="turma-info">
-    <div className="turma-header">
-      <div className="turma-header-info">
-        <h4 className="turma-nome">{turma.nome}</h4>
-        <span
-          className={`turma-turno turno-${turma.turno.toLowerCase()}`}
-        >
-          {turma.turno}
-        </span>
-      </div>
+                <div key={turma.id} className="cadastro-turma-card">
+                  <div className="turma-info">
+                    <div className="turma-header">
+                      <div className="turma-header-info">
+                        <h4 className="turma-nome">{turma.nome}</h4>
+                        <span
+                          className={`turma-turno turno-${turma.turno.toLowerCase()}`}
+                        >
+                          {turma.turno}
+                        </span>
+                      </div>
 
-      <button
-        className="remove-turma-button"
-        onClick={() => handleRemoveTurma(turma.id)}
-        title="Remover turma"
-      >
-        <Trash2 size={18} />
-      </button>
-    </div>
+                      <button
+                        className="remove-turma-button"
+                        onClick={() => handleRemoveTurma(turma.id)}
+                        title="Remover turma"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
 
-    <div className="turma-details">
-      <span className="alunos-count">
-        <strong>{turma.alunosMatriculados}</strong> de{" "}
-        <strong>{turma.quantidadeMaxima}</strong> alunos matriculados
-      </span>
-      <div className="progress-bar">
-        <div
-          className="progress-fill"
-          style={{ width: `${percentualOcupacao}%` }}
-        ></div>
-      </div>
-    </div>
-  </div>
-</div>
+                    <div className="turma-details">
+                      <span className="alunos-count">
+                        <strong>{turma.alunosMatriculados}</strong> de{" "}
+                        <strong>{turma.quantidadeMaxima}</strong> alunos matriculados
+                      </span>
+                      <div className="progress-bar">
+                        <div
+                          className="progress-fill"
+                          style={{ width: `${percentualOcupacao}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
 
 
-                
+
               );
             })}
           </div>
