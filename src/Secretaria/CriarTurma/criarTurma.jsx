@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Users, Plus, XCircle, Trash2, Printer } from "lucide-react";
 import "./criarTurma.css";
 

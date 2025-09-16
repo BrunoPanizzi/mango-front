@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-import AuthService from '../services/AuthService';
+import AuthService from '../Services/AuthService';
 
 import './login.css';
 import { useAuth } from '../context/AuthContext';
