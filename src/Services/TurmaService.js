@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { API_URL } from '../utils/env.js'
+
 const novaTurmaSchema = z.object({
     nome: z.string(),
     anoEscolar: z.number().int(),
@@ -74,7 +76,5 @@ class TurmaService {
         }
     }
 }
-
-const API_URL = 'http://localhost:3003' // TODO: Move to env variable
 
 export default new TurmaService();
