@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Users, Plus, XCircle, Trash2, Printer } from "lucide-react";
 import "./criarTurma.css";
 
-import { useTurmas } from "./useTurmas";
+import { useTurmas } from "../../hooks/useTurmas";
 import { useCreateTurma } from "./useCreateTurma";
 import { useDeleteTurma } from "./useDeleteTurma";
 
