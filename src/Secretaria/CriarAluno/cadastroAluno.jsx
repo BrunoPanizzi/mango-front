@@ -1,8 +1,14 @@
 import React, { useState } from "react";
-import "./cadastroAluno.css";
 import { XCircle, UserPlus, Trash2 } from "lucide-react";
 
+import "./cadastroAluno.css";
+
+import { useCreateAluno } from "../../hooks/useCreateAluno";
+import { mascaraCEP, mascaraCPF, mascaraTelefone } from "../../utils/formatacao";
+
 const CadastroAluno = () => {
+  const { create, createError, isCreating } = useCreateAluno()
+
   const [formData, setFormData] = useState({
     nome: "",
     cpf: "",
@@ -45,7 +51,7 @@ const CadastroAluno = () => {
     "9ano", // Adicionei 9º ano aqui para a lista de séries
   ];
 
-    // Defina o mapeamento de disciplinas aqui
+  // Defina o mapeamento de disciplinas aqui
   const disciplinasMap = {
     portugues: "Português",
     matematica: "Matemática",
@@ -100,25 +106,6 @@ const CadastroAluno = () => {
     "turma",
   ];
 
-  // Máscaras
-  const mascaraCPF = (value) => {
-    return value
-      .replace(/\D/g, "")
-      .replace(/(\d{3})(\d)/, "$1.$2")
-      .replace(/(\d{3})(\d)/, "$1.$2")
-      .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
-  };
-
-  const mascaraTelefone = (value) => {
-    return value
-      .replace(/\D/g, "")
-      .replace(/(\d{2})(\d)/, "($1) $2")
-      .replace(/(\d{4,5})(\d{4})$/, "$1-$2");
-  };
-
-  const mascaraCEP = (value) => {
-    return value.replace(/\D/g, "").replace(/(\d{5})(\d)/, "$1-$2");
-  };
 
   // Handlers
   const handleInputChange = (e) => {
@@ -172,7 +159,7 @@ const CadastroAluno = () => {
     buscarCEP(formData.cep);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     let invalidos = [];
 
@@ -232,7 +219,30 @@ const CadastroAluno = () => {
     setCamposInvalidos([]);
     console.log("Dados do Formulário:", formData);
     console.log("Histórico Escolar:", historicoEscolar);
-    // Aqui você enviaria os dados para o backend ou faria outra ação
+
+    const aluno = await create({
+      nome: formData.nome,
+      cns: formData.cns,
+      nascimento: formData.dataNascimento,
+      genero: formData.genero,
+      religiao: formData.religiao,
+      telefone: formData.telefone,
+      logradouro: formData.rua,
+      numero: formData.numero,
+      bairro: formData.bairro,
+      cep: formData.cep,
+      cidade: formData.cidade,
+      estado: formData.estado,
+      responsavel1Nome: formData.nomeR1,
+      responsavel1Cpf: formData.cpfR1,
+      responsavel1Telefone: formData.telefoneR1,
+      responsavel1Parentesco: formData.parentescoR1,
+      responsavel2Nome: formData.nomeR2,
+      responsavel2Cpf: formData.cpfR2,
+      responsavel2Telefone: formData.telefoneR2,
+      responsavel2Parentesco: formData.parentescoR2
+    });
+
     handleLimpar(false); // limpa direto sem confirmação após o envio
   };
 
@@ -350,24 +360,24 @@ const CadastroAluno = () => {
     ]);
   };
 
-const removerAnoEscolar = (index) => {
-  // Impede remover se não for o último
-  if (index !== historicoEscolar.length - 1) {
-    alert("Os anos escolares devem ser excluídos em ordem decrescente.");
-    return;
-  }
+  const removerAnoEscolar = (index) => {
+    // Impede remover se não for o último
+    if (index !== historicoEscolar.length - 1) {
+      alert("Os anos escolares devem ser excluídos em ordem decrescente.");
+      return;
+    }
 
-  // Impede remover se for o único
-  if (historicoEscolar.length === 1) {
-    alert(
-      "Para remover o único ano escolar, desmarque a opção 'Aluno proveniente de outra escola'."
-    );
-    return;
-  }
+    // Impede remover se for o único
+    if (historicoEscolar.length === 1) {
+      alert(
+        "Para remover o único ano escolar, desmarque a opção 'Aluno proveniente de outra escola'."
+      );
+      return;
+    }
 
-  // Remove normalmente se for o último
-  setHistoricoEscolar((prev) => prev.filter((_, i) => i !== index));
-};
+    // Remove normalmente se for o último
+    setHistoricoEscolar((prev) => prev.filter((_, i) => i !== index));
+  };
 
   return (
     <div className="cadastro-container-aluno">
@@ -811,22 +821,22 @@ const removerAnoEscolar = (index) => {
                     {!["6ano", "7ano", "8ano", "9ano"].includes(
                       ano.serieAnterior
                     ) && (
-                      <div className="form-group-aluno flex-1">
-                        <label htmlFor={`notaConclusao-${index}`}>Nota*</label>
-                        <input
-                          type="number"
-                          id={`notaConclusao-${index}`}
-                          name="notaConclusao"
-                          value={ano.notaConclusao}
-                          onChange={(e) => handleHistoricoChange(index, e)}
-                          className={
-                            camposInvalidos.includes(`notaConclusao-${index}`)
-                              ? "input-error"
-                              : ""
-                          }
-                        />
-                      </div>
-                    )}
+                        <div className="form-group-aluno flex-1">
+                          <label htmlFor={`notaConclusao-${index}`}>Nota*</label>
+                          <input
+                            type="number"
+                            id={`notaConclusao-${index}`}
+                            name="notaConclusao"
+                            value={ano.notaConclusao}
+                            onChange={(e) => handleHistoricoChange(index, e)}
+                            className={
+                              camposInvalidos.includes(`notaConclusao-${index}`)
+                                ? "input-error"
+                                : ""
+                            }
+                          />
+                        </div>
+                      )}
 
                     <div className="form-group-aluno flex-1">
                       <label htmlFor={`anoConclusao-${index}`}>
@@ -859,46 +869,46 @@ const removerAnoEscolar = (index) => {
                   </div>{" "}
                   {/* Fim da primeira linha do ano escolar */}
 
-                  
+
                   {/* Segunda linha: Notas por disciplina (aparece apenas para 6º, 7º, 8º e 9º ano) */}
                   {["6ano", "7ano", "8ano", "9ano"].includes(
                     ano.serieAnterior
                   ) && (
-                    <div className="form-row-aluno-materias">
-                      {Object.keys(ano.notas).map((materia) => (
-                        <div key={materia} className="form-group-aluno flex-1">
-                          <label>
-                            {disciplinasMap[materia] || materia.charAt(0).toUpperCase() + materia.slice(1)}*
-                          </label>
-                          <input
-                            type="number"
-                            name={`notas.${materia}`}
-                            value={ano.notas[materia]}
-                            onChange={(e) => {
-                              const novosHistoricos = [...historicoEscolar];
-                              novosHistoricos[index].notas[materia] =
-                                e.target.value;
-                              setHistoricoEscolar(novosHistoricos);
-                            }}
-                            className={
-                              camposInvalidos.includes(
-                                `notas.${materia}-${index}`
-                              )
-                                ? "input-error"
-                                : ""
-                            }
-                          />
-                        </div>
-                      ))}
-                      
-                    </div>
-                  )}
+                      <div className="form-row-aluno-materias">
+                        {Object.keys(ano.notas).map((materia) => (
+                          <div key={materia} className="form-group-aluno flex-1">
+                            <label>
+                              {disciplinasMap[materia] || materia.charAt(0).toUpperCase() + materia.slice(1)}*
+                            </label>
+                            <input
+                              type="number"
+                              name={`notas.${materia}`}
+                              value={ano.notas[materia]}
+                              onChange={(e) => {
+                                const novosHistoricos = [...historicoEscolar];
+                                novosHistoricos[index].notas[materia] =
+                                  e.target.value;
+                                setHistoricoEscolar(novosHistoricos);
+                              }}
+                              className={
+                                camposInvalidos.includes(
+                                  `notas.${materia}-${index}`
+                                )
+                                  ? "input-error"
+                                  : ""
+                              }
+                            />
+                          </div>
+                        ))}
+
+                      </div>
+                    )}
                 </div> /* Fim do historico-ano-container */
               ))}
-              
-              
-              
-              
+
+
+
+
               <div className="form-row-aluno-add-ano-aescolar">
                 <button
                   type="button"
