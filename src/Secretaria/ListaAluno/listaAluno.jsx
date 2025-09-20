@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   Search,
   Users,
@@ -8,82 +8,23 @@ import TurmaCard from "./TurmaCard";
 
 import "./listaAluno.css";
 import { useTurmas } from "../../hooks/useTurmas";
+import AlunoForm from "../../components/AlunoForm/alunoForm"; // ajuste o caminho se necessário
 
 const ListaAlunos = () => {
   const [filtro, setFiltro] = useState("");
 
-  const { turmas, hasError, isLoading } = useTurmas({ withAlunos: true });
+  const { turmas, refetch, hasError, isLoading } = useTurmas({ withAlunos: true });
 
-  // Dados mockados das turmas e alunos
-  //  const turmas = [
-  //    {
-  //      id: 1,
-  //      nome: "1º ANO A",
-  //      turno: "manha",
-  //      capacidade: 30,
-  //      alunos: [
-  //        { id: 1, nome: "Ana Silva", status: "ativo" },
-  //        { id: 2, nome: "Bruno Costa", status: "ativo" },
-  //        { id: 3, nome: "Carlos Mendes", status: "inativo" },
-  //        { id: 4, nome: "Diana Oliveira", status: "ativo" },
-  //        { id: 5, nome: "Eduardo Santos", status: "ativo" },
-  //      ],
-  //    },
-  //    {
-  //      id: 2,
-  //      nome: "2º ANO A",
-  //      turno: "manha",
-  //      capacidade: 25,
-  //      alunos: [
-  //        { id: 6, nome: "Fernanda Lima", status: "ativo" },
-  //        { id: 7, nome: "Gabriel Rocha", status: "ativo" },
-  //        { id: 8, nome: "Helena Cardoso", status: "inativo" },
-  //        { id: 9, nome: "Igor Ferreira", status: "ativo" },
-  //      ],
-  //    },
-  //    {
-  //      id: 3,
-  //      nome: "2º ANO B",
-  //      turno: "tarde",
-  //      capacidade: 20,
-  //      alunos: [
-  //        { id: 10, nome: "Julia Alves", status: "ativo" },
-  //        { id: 11, nome: "Lucas Barbosa", status: "ativo" },
-  //        { id: 12, nome: "Maria João", status: "ativo" },
-  //        { id: 13, nome: "Nicolas Pereira", status: "inativo" },
-  //        { id: 14, nome: "Olga Nascimento", status: "ativo" },
-  //        { id: 15, nome: "Paulo Dias", status: "ativo" },
-  //      ],
-  //    },
-  //    {
-  //      id: 4,
-  //      nome: "3º ANO A",
-  //      turno: "manha",
-  //      capacidade: 28,
-  //      alunos: [
-  //        { id: 16, nome: "Queila Monteiro", status: "ativo" },
-  //        { id: 17, nome: "Rafael Torres", status: "ativo" },
-  //        { id: 18, nome: "Sofia Campos", status: "ativo" },
-  //      ],
-  //    },
-  //  ];
 
-  // Filtrar turmas baseado no termo de busca
+  // Filtrar turmas baseado no termo de busca (usa turmasState agora)
   const turmasFiltradas = useMemo(() => {
     if (!filtro) return turmas;
-
     return turmas
       .filter((turma) => {
-        // Filtrar por nome da turma
-        const turmaNomeMatch = turma.nome
-          .toLowerCase()
-          .includes(filtro.toLowerCase());
-
-        // Filtrar por nome dos alunos
+        const turmaNomeMatch = turma.nome.toLowerCase().includes(filtro.toLowerCase());
         const alunoNomeMatch = turma.alunos.some((aluno) =>
           aluno.nome.toLowerCase().includes(filtro.toLowerCase())
         );
-
         return turmaNomeMatch || alunoNomeMatch;
       })
       .map((turma) => ({
@@ -96,6 +37,69 @@ const ListaAlunos = () => {
         ),
       }));
   }, [filtro, turmas]);
+
+  // Modal control
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedAluno, setSelectedAluno] = useState(null);
+  const [selectedTurmaId, setSelectedTurmaId] = useState(null);
+
+  const handleDeclaracaoAluno = (alunoId) => {
+    console.log("Declaração aluno:", alunoId);
+  };
+
+  // Atualiza o aluno no estado após salvar no formulário
+  const handleSaveAluno = (payload) => {
+    /*
+    // payload é todo o objeto retornado pelo formulário
+    // Se o aluno tiver id, atualizamos; caso contrário trata como novo cadastro
+    if (selectedAluno && selectedAluno.id) {
+      setTurmasState((prev) =>
+        prev.map((turma) =>
+          turma.id === selectedTurmaId
+            ? {
+              ...turma,
+              alunos: turma.alunos.map((a) => (a.id === selectedAluno.id ? { ...a, ...payload } : a)),
+            }
+            : turma
+        )
+      );
+    } else {
+      // exemplo simples: inserir novo aluno na primeira turma
+      const novoId = Date.now();
+      setTurmasState((prev) => {
+        if (prev.length === 0) return prev;
+        const copia = [...prev];
+        copia[0] = { ...copia[0], alunos: [{ id: novoId, ...payload }, ...copia[0].alunos] };
+        return copia;
+      });
+    }
+
+    // fechar modal
+    setModalOpen(false);
+    setSelectedAluno(null);
+    setSelectedTurmaId(null);
+    */
+  };
+
+  const handleCancelEdit = () => {
+    setModalOpen(false);
+    setSelectedAluno(null);
+    setSelectedTurmaId(null);
+  };
+
+  // Fecha tela com ESC
+  useEffect(() => {
+    if (!modalOpen) return;
+
+    const onKeyDown = (e) => {
+      if (e.key === "Escape") {
+        handleCancelEdit();
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [modalOpen]); // roda quando modalOpen muda
 
   return (
     <div className="cadastro-turma-form-container">
@@ -125,12 +129,8 @@ const ListaAlunos = () => {
       <div className="cadastro-turma-form-section">
         <div className="cadastro-turma-section-header">
           <span>Turmas Cadastradas</span>
-          <span
-            style={{ fontSize: "14px", color: "#64748b", fontWeight: "normal" }}
-          >
-            {turmasFiltradas.length} turma
-            {turmasFiltradas.length !== 1 ? "s" : ""} encontrada
-            {turmasFiltradas.length !== 1 ? "s" : ""}
+          <span style={{ fontSize: "14px", color: "#64748b", fontWeight: "normal" }}>
+            {turmasFiltradas.length} turma{turmasFiltradas.length !== 1 ? "s" : ""} encontrada{turmasFiltradas.length !== 1 ? "s" : ""}
           </span>
         </div>
 
@@ -140,10 +140,7 @@ const ListaAlunos = () => {
               <Users size={40} />
             </div>
             <h4>Nenhuma turma encontrada</h4>
-            <p>
-              Tente ajustar os filtros de busca ou verifique se há turmas
-              cadastradas.
-            </p>
+            <p>Tente ajustar os filtros de busca ou verifique se há turmas cadastradas.</p>
           </div>
         ) : (
           <div className="turmas-list-alunos">
@@ -153,6 +150,20 @@ const ListaAlunos = () => {
           </div>
         )}
       </div>
+
+      {/* Overlay / Modal com o formulário */}
+      {modalOpen && (
+        <div className="modal-overlay" onClick={handleCancelEdit}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <AlunoForm
+              initialData={selectedAluno}
+              onSave={handleSaveAluno}
+              onCancel={handleCancelEdit}
+              mode="edit"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

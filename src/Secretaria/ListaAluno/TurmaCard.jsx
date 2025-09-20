@@ -58,8 +58,8 @@ const TurmaCard = ({ turma }) => {
     };
 
     const alunosAtivos = turma.alunos.filter((a) => a.status === "ativo").length;
-    const percentualOcupacao = (alunosAtivos / turma.capacidade) * 100;
-    const statusTurma = getStatusTurma(turma.alunos, turma.capacidade);
+    const percentualOcupacao = (alunosAtivos / turma.quantidadeMaxima) * 100;
+    const statusTurma = getStatusTurma(turma.alunos, turma.quantidadeMaxima);
 
     return (
         <div className={`turma-card ${statusTurma}`}>
@@ -89,7 +89,7 @@ const TurmaCard = ({ turma }) => {
 
                 <div className="turma-details">
                     <div className="alunos-count">
-                        {alunosAtivos} de {turma.capacidade} vagas ocupadas (
+                        {alunosAtivos} de {turma.quantidadeMaxima} vagas ocupadas (
                         {turma.alunos.length} alunos cadastrados)
                     </div>
                     <div className="progress-bar">

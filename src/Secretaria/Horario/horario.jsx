@@ -291,8 +291,9 @@ const Horarios = () => {
                 <div className="cadastro-horario-input-wrapper">
                   <select
                     id="turma"
-                    className={`cadastro-horario-select ${erros.turmaSelecionada ? "input-error" : ""
-                      }`}
+                    className={`cadastro-horario-select ${
+                      erros.turmaSelecionada ? "input-error" : ""
+                    }`}
                     value={turmaSelecionada}
                     onChange={handleSelecionarTurma}
                   >
@@ -310,8 +311,9 @@ const Horarios = () => {
                 <div className="cadastro-horario-input-wrapper">
                   <select
                     id="periodo"
-                    className={`cadastro-horario-select ${erros.periodoSelecionado ? "input-error" : ""
-                      }`}
+                    className={`cadastro-horario-select ${
+                      erros.periodoSelecionado ? "input-error" : ""
+                    }`}
                     value={periodoSelecionado}
                     onChange={(e) => setPeriodoSelecionado(e.target.value)}
                   >
@@ -472,10 +474,11 @@ const Horarios = () => {
                       {/* Lado direito: botões */}
                       <div className="grade-header-actions">
                         <button
-                          className={`action-button-horarios ${gradeEditando === grade.id
+                          className={`action-button-horarios ${
+                            gradeEditando === grade.id
                               ? "save-button-horarios"
                               : "edit-button-horarios"
-                            }`}
+                          }`}
                           onClick={(e) => {
                             e.stopPropagation();
                             handleEditarOuSalvar(grade);

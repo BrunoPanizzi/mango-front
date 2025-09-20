@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 
-import TurmaService from '../Services/TurmaService';
+import TurmaService from '../../Services/TurmaService';
 
-export const useTurmas = ({ withAlunos } = { withAlunos: false }) => {
+export const useTurmas = () => {
     const [turmas, setTurmas] = useState([]);
 
     const [isLoading, setIsLoading] = useState(false);
@@ -12,7 +12,7 @@ export const useTurmas = ({ withAlunos } = { withAlunos: false }) => {
         setIsLoading(true);
         setHasError(false);
         try {
-            const list = await TurmaService.list({ withAlunos });
+            const list = await TurmaService.list();
             setTurmas(list);
         } catch (error) {
             setHasError(true);

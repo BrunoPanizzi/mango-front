@@ -9,7 +9,6 @@ import {
   ChevronRight,
   GraduationCap,
   BookOpen,
-  Users,
 } from "lucide-react";
 
 import "./listaProfe.css";
