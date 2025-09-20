@@ -5,9 +5,12 @@ import "./cadastroAluno.css";
 
 import { useCreateAluno } from "../../hooks/useCreateAluno";
 import { mascaraCEP, mascaraCPF, mascaraTelefone } from "../../utils/formatacao";
+import { useCreateHistoricoEscolar } from "../../hooks/useCreateHistorico";
+import { useDisciplinas } from "../../hooks/useDisciplinas";
 
 const CadastroAluno = () => {
-  const { create, createError, isCreating } = useCreateAluno()
+  const { create: createAluno, createError, isCreating } = useCreateAluno()
+  const { create: createHistoricoEscolar } = useCreateHistoricoEscolar();
 
   const [formData, setFormData] = useState({
     nome: "",
@@ -51,7 +54,7 @@ const CadastroAluno = () => {
     "9ano", // Adicionei 9º ano aqui para a lista de séries
   ];
 
-  // Defina o mapeamento de disciplinas aqui
+  // mapeamento do nome interno, utilizado dentro dos objetos, para o nome exibido na interface e salvo no banco
   const disciplinasMap = {
     portugues: "Português",
     matematica: "Matemática",
@@ -64,23 +67,25 @@ const CadastroAluno = () => {
     religiao: "Religião",
   };
 
+  const { disciplinas } = useDisciplinas()
+
   const [historicoEscolar, setHistoricoEscolar] = useState([
-    {
-      escolaAnterior: "",
-      serieAnterior: "", // Mudei para vazio para que o usuário selecione
-      anoConclusao: "",
-      notaConclusao: "",
-      notas: {
-        portugues: "",
-        matemática: "",
-        ciencias: "",
-        historia: "",
-        geografia: "",
-        ingles: "",
-        artes: "",
-        edFisica: "",
-      },
-    },
+    // {
+    //   escolaAnterior: "",
+    //   serieAnterior: "", // Mudei para vazio para que o usuário selecione
+    //   anoConclusao: "",
+    //   notaConclusao: "",
+    //   notas: {
+    //     portugues: "",
+    //     matemática: "",
+    //     ciencias: "",
+    //     historia: "",
+    //     geografia: "",
+    //     ingles: "",
+    //     artes: "",
+    //     edFisica: "",
+    //   },
+    // },
   ]);
 
   // Campos obrigatórios que são sempre parte do formData principal
@@ -161,6 +166,9 @@ const CadastroAluno = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("Dados do Formulário:", formData);
+    console.log("Histórico Escolar:", historicoEscolar);
+
     let invalidos = [];
 
     // 1. Validar campos principais do formData
@@ -220,7 +228,7 @@ const CadastroAluno = () => {
     console.log("Dados do Formulário:", formData);
     console.log("Histórico Escolar:", historicoEscolar);
 
-    const aluno = await create({
+    const aluno = await createAluno({
       nome: formData.nome,
       cns: formData.cns,
       nascimento: formData.dataNascimento,
@@ -242,6 +250,39 @@ const CadastroAluno = () => {
       responsavel2Telefone: formData.telefoneR2,
       responsavel2Parentesco: formData.parentescoR2
     });
+
+    if (formData.alunoOutraEscola) {
+      // criar historicos escolares
+      for (const ano of historicoEscolar) {
+        if (['1ano', '2ano', '3ano', '4ano', '5ano'].includes(ano.serieAnterior)) {
+          await createHistoricoEscolar({
+            idAluno: aluno.id,
+            // idDisciplina: , // não aplicável para 1º a 5º ano
+            nomeEscola: ano.escolaAnterior,
+            serieConcluida: ano.serieAnterior,
+            nota: ano.notaConclusao,
+            anoConclusao: Number.parseInt(ano.anoConclusao)
+          });
+        } else {
+          for (const [key, valor] of Object.entries(ano.notas)) {
+            const disciplinaId = disciplinas.find(d => d.nome === disciplinasMap[key])?.id;
+            if (!disciplinaId) {
+              console.error(`Disciplina não encontrada para a matéria: ${disciplinasMap[key]}`);
+              continue; // pula para a próxima iteração se a disciplina não for encontrada
+            }
+
+            await createHistoricoEscolar({
+              idAluno: aluno.id,
+              idDisciplina: disciplinaId,
+              nomeEscola: ano.escolaAnterior,
+              serieConcluida: ano.serieAnterior,
+              nota: valor,
+              anoConclusao: Number.parseInt(ano.anoConclusao)
+            });
+          }
+        }
+      }
+    }
 
     handleLimpar(false); // limpa direto sem confirmação após o envio
   };
@@ -287,7 +328,7 @@ const CadastroAluno = () => {
         anoConclusao: "",
         notas: {
           portugues: "",
-          matemática: "",
+          matematica: "",
           ciencias: "",
           historia: "",
           geografia: "",
@@ -314,27 +355,12 @@ const CadastroAluno = () => {
       return;
     }
 
-    let proximaSerie = "";
-
-    if (historicoEscolar.length === 1) {
-      // Se histórico vazio, começa com "1ano"
-      proximaSerie = "2ano";
-    } else {
-      // Se existe histórico, pega a última série e calcula a próxima
-      const ultimoAno = historicoEscolar[historicoEscolar.length - 1];
-      const ultimaSerieIndex = series.indexOf(ultimoAno.serieAnterior);
-      <div className="linha-divisoria" />
-      // Se a última série for "1ano", não vai permitir adicionar outro
-      if (ultimoAno.serieAnterior === "2ano") {
-        proximaSerie = "3ano"; // Faz o próximo ser "2ano"
-      } else {
-        // Verifica se ainda pode avançar na série
-        if (ultimaSerieIndex < series.length - 1) {
-          proximaSerie = series[ultimaSerieIndex + 1];
-        } else {
-          alert("Você já alcançou o último ano escolar.");
-          return;
-        }
+    let proximaSerie = "1ano"; // padrão
+    if (historicoEscolar.length > 0) {
+      const ultimaSerie = historicoEscolar[historicoEscolar.length - 1].serieAnterior;
+      const indiceUltimaSerie = series.indexOf(ultimaSerie);
+      if (indiceUltimaSerie !== -1 && indiceUltimaSerie < series.length - 1) {
+        proximaSerie = series[indiceUltimaSerie + 1];
       }
     }
 
@@ -347,14 +373,14 @@ const CadastroAluno = () => {
         anoConclusao: "",
         notaConclusao: "",
         notas: {
-          Português: "",
-          Matemática: "",
-          Ciências: "",
-          História: "",
-          Geografia: "",
-          Inglês: "",
-          Arte: "",
-          Religião: "",
+          portugues: "",
+          matematica: "",
+          ciencias: "",
+          historia: "",
+          geografia: "",
+          ingles: "",
+          artes: "",
+          edFisica: "",
         },
       },
     ]);
