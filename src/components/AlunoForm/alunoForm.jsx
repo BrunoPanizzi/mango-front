@@ -3,7 +3,6 @@ import { XCircle, UserPlus, Trash2 } from "lucide-react";
 
 import { mascaraCEP, mascaraCPF, mascaraTelefone } from "../../utils/formatacao";
 
-import { useDisciplinas } from "../../hooks/useDisciplinas";
 
 import "./alunoForm.css";
 
@@ -63,7 +62,7 @@ const AlunoForm = ({ initialData = null, onSave = null, onCancel = null, mode = 
     religiao: "Religião",
   };
 
-  const { disciplinas } = useDisciplinas()
+
 
   const [historicoEscolar, setHistoricoEscolar] = useState([
     // {
@@ -252,16 +251,19 @@ const AlunoForm = ({ initialData = null, onSave = null, onCancel = null, mode = 
     setCamposInvalidos([]);
     const payload = { ...formData, historicoEscolar };
 
-    // Se veio onSave (modo integrado), chama o callback do pai
     if (onSave) {
-      onSave(payload);
-      // opcional: não forçar fechamento aqui; quem chamou decide
-      return;
+      try {
+        await onSave(payload);
+        handleLimpar(false);
+        alert("Aluno salvo com sucesso!");
+      } catch (error) {
+        alert("Erro ao salvar o aluno. Verifique os dados e tente novamente.");
+        console.error("Erro ao salvar:", error);
+      } finally {
+        return;
+      }
     }
 
-    // comportamento antigo (console + limpar)
-    console.log("Dados do Formulário:", formData);
-    console.log("Histórico Escolar:", historicoEscolar);
     handleLimpar(false);
   };
 
