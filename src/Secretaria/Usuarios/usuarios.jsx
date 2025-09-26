@@ -10,6 +10,7 @@ import {
   Mail,
   UserCheck,
 } from "lucide-react";
+
 import "./usuarios.css";
 
 const Usuarios = () => {
@@ -177,7 +178,7 @@ const Usuarios = () => {
     }
 
     // Verificar se email já existe (exceto o próprio usuário)
-    const emailExiste = usuarios.some(user =>
+    const emailExiste = usuarios.some(user => 
       user.email.toLowerCase() === dadosEdicao.email.toLowerCase() && user.id !== usuarioId
     );
     if (emailExiste) {

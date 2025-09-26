@@ -363,7 +363,11 @@ textarea.input-error:hover {
   width: 100%;
   padding: 10px;
   margin-bottom: 10px;
+<<<<<<<< HEAD:src/Secretaria/CriarAluno/cadastroAluno.css
   box-sizing: border-box;
+========
+  box-sizing: border-box; 
+>>>>>>>> master:src/components/AlunoForm/alunoForm.css
 }
 
 
@@ -371,13 +375,20 @@ textarea.input-error:hover {
 .modal-overlay {
   position: fixed;
   inset: 0;
+<<<<<<<< HEAD:src/Secretaria/CriarAluno/cadastroAluno.css
   background: rgba(0, 0, 0, 0.5);
+========
+  background: rgba(0,0,0,0.5);
+>>>>>>>> master:src/components/AlunoForm/alunoForm.css
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 9999;
 }
+<<<<<<<< HEAD:src/Secretaria/CriarAluno/cadastroAluno.css
 
+========
+>>>>>>>> master:src/components/AlunoForm/alunoForm.css
 .modal-content {
   background: #fff;
   border-radius: 10px !important;
@@ -386,9 +397,14 @@ textarea.input-error:hover {
   max-height: 87%;
   overflow: auto;
   padding: 16px;
+<<<<<<<< HEAD:src/Secretaria/CriarAluno/cadastroAluno.css
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 }
 
+========
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+}
+>>>>>>>> master:src/components/AlunoForm/alunoForm.css
 .modal-close {
   float: right;
   background: transparent;
@@ -396,4 +412,13 @@ textarea.input-error:hover {
   font-weight: 600;
   cursor: pointer;
   margin-bottom: 8px;
+<<<<<<<< HEAD:src/Secretaria/CriarAluno/cadastroAluno.css
 }
+========
+}
+
+.modal-content {
+  scrollbar-width: none; /* Firefox */
+}
+
+>>>>>>>> master:src/components/AlunoForm/alunoForm.css

@@ -291,15 +291,12 @@
 }
 
 .activate-button {
-  background: #f59e0b;
-  /* Laranja âmbar */
-  color: #fff;
-  /* Texto branco para contraste */
+  background: #f59e0b; /* Laranja âmbar */
+  color: #fff; /* Texto branco para contraste */
 }
 
 .activate-button:hover {
-  background: #d97706;
-  /* Laranja mais escuro no hover */
+  background: #d97706; /* Laranja mais escuro no hover */
   color: #fff;
   box-shadow: 0 4px 12px rgba(217, 119, 6, 0.3);
 }
@@ -390,7 +387,7 @@
   font-size: 14px;
 }
 
-.turma-row> :nth-child(2) {
+.turma-row > :nth-child(2) {
   justify-self: right;
   text-align: center;
 }

@@ -2,6 +2,8 @@ import { useState, useMemo, useEffect } from "react";
 import {
   Search,
   Users,
+  ScrollText,
+  Printer,
 } from "lucide-react";
 
 import TurmaCard from "./TurmaCard";
