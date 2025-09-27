@@ -746,11 +746,12 @@ const AlunoForm = ({ initialData = null, onSave = null, onCancel = null, mode = 
           {formData.alunoOutraEscola && (
             <div className="form-section-aluno">
               <div className="section-title-cad-aluno">Histórico Escolar</div>
-              {historicoEscolar.map((ano, index) => (
-                <div key={index} className="historico-ano-container">
-                  {/* Primeira linha: Escola, Série, Nota (condicional), Ano Conclusão, Remover */}
-                  <div className="form-row-aluno">
-                    <div className="form-group-aluno flex-3">
+
+              <div className="historico-container">
+                {historicoEscolar.map((ano, index) => (
+                  <div key={index} className="historico-ano-container">
+                    {/* Primeira linha: Escola, Série, Nota (condicional), Ano Conclusão, Remover */}
+                    <div className="form-group-aluno">
                       <label htmlFor={`escolaAnterior-${index}`}>Escola Anterior*</label>
                       <input
                         type="text"
@@ -765,7 +766,11 @@ const AlunoForm = ({ initialData = null, onSave = null, onCancel = null, mode = 
                         }
                       />
                     </div>
-                    <div className="form-group-aluno flex-1">
+                    <div className="form-group-aluno"
+                      style={{
+                        gridColumn: ['6ano', '7ano', '8ano', '9ano'].includes(ano.serieAnterior) ? 'span 2' : 'span 1'
+                      }}
+                    >
                       <label htmlFor={`serieAnterior-${index}`}>Série*</label>
                       <select
                         id={`serieAnterior-${index}`}
@@ -793,7 +798,7 @@ const AlunoForm = ({ initialData = null, onSave = null, onCancel = null, mode = 
 
                     {/* Renderiza nota de conclusão para 1º ao 5º ano */}
                     {!["6ano", "7ano", "8ano", "9ano"].includes(ano.serieAnterior) && (
-                      <div className="form-group-aluno flex-1">
+                      <div className="form-group-aluno">
                         <label htmlFor={`notaConclusao-${index}`}>Nota*</label>
                         <input
                           type="number"
@@ -810,7 +815,7 @@ const AlunoForm = ({ initialData = null, onSave = null, onCancel = null, mode = 
                       </div>
                     )}
 
-                    <div className="form-group-aluno flex-1">
+                    <div className="form-group-aluno">
                       <label htmlFor={`anoConclusao-${index}`}>Ano de Conclusão*</label>
                       <input
                         type="text"
@@ -827,7 +832,7 @@ const AlunoForm = ({ initialData = null, onSave = null, onCancel = null, mode = 
                       />
                     </div>
 
-                    <div className="form-group-aluno flex-0">
+                    <div className="form-group-aluno">
                       <button
                         type="button"
                         onClick={() => removerAnoEscolar(index)}
@@ -837,43 +842,43 @@ const AlunoForm = ({ initialData = null, onSave = null, onCancel = null, mode = 
                         <Trash2 size={20} />
                       </button>
                     </div>
-                  </div>
 
-                  {/* Segunda linha: Notas por disciplina (aparece apenas para 6º, 7º, 8º e 9º ano) */}
-                  {["6ano", "7ano", "8ano", "9ano"].includes(
-                    ano.serieAnterior
-                  ) && (
-                      <div className="form-row-aluno-materias">
-                        {Object.keys(ano.notas).map((materia) => (
-                          <div key={materia} className="form-group-aluno flex-1">
-                            <label>
-                              {disciplinasMap[materia] || materia.charAt(0).toUpperCase() + materia.slice(1)}*
-                            </label>
-                            <input
-                              type="number"
-                              name={`notas.${materia}`}
-                              value={ano.notas[materia]}
-                              onChange={(e) => {
-                                const novosHistoricos = [...historicoEscolar];
-                                novosHistoricos[index].notas[materia] =
-                                  e.target.value;
-                                setHistoricoEscolar(novosHistoricos);
-                              }}
-                              className={
-                                camposInvalidos.includes(
-                                  `notas.${materia}-${index}`
-                                )
-                                  ? "input-error"
-                                  : ""
-                              }
-                            />
-                          </div>
-                        ))}
+                    {/* Segunda linha: Notas por disciplina (aparece apenas para 6º, 7º, 8º e 9º ano) */}
+                    {["6ano", "7ano", "8ano", "9ano"].includes(
+                      ano.serieAnterior
+                    ) && (
+                        <div className="form-row-aluno-materias">
+                          {Object.keys(ano.notas).map((materia) => (
+                            <div key={materia} className="form-group-aluno flex-1">
+                              <label>
+                                {disciplinasMap[materia] || materia.charAt(0).toUpperCase() + materia.slice(1)}*
+                              </label>
+                              <input
+                                type="number"
+                                name={`notas.${materia}`}
+                                value={ano.notas[materia]}
+                                onChange={(e) => {
+                                  const novosHistoricos = [...historicoEscolar];
+                                  novosHistoricos[index].notas[materia] =
+                                    e.target.value;
+                                  setHistoricoEscolar(novosHistoricos);
+                                }}
+                                className={
+                                  camposInvalidos.includes(
+                                    `notas.${materia}-${index}`
+                                  )
+                                    ? "input-error"
+                                    : ""
+                                }
+                              />
+                            </div>
+                          ))}
 
-                      </div>
-                    )}
-                </div> /* Fim do historico-ano-container */
-              ))}
+                        </div>
+                      )}
+                  </div> /* Fim do historico-ano-container */
+                ))}
+              </div>
 
               <div className="form-row-aluno-add-ano-aescolar">
                 <button

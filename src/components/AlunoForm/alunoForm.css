@@ -308,9 +308,10 @@
 }
 
 .form-row-aluno-materias {
+  grid-column: 1 / -1;
   display: flex;
   gap: 24px;
-  padding: 24px 30px;
+  padding-top: 24px;
   align-items: flex-end;
 }
 
@@ -396,4 +397,17 @@ textarea.input-error:hover {
   font-weight: 600;
   cursor: pointer;
   margin-bottom: 8px;
+}
+
+.historico-container {
+  display: grid;
+  grid-template-columns: 3fr 1fr 1fr 1fr auto;
+  gap: 48px 24px;
+  padding: 24px 30px;
+}
+
+.historico-ano-container {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
 }
